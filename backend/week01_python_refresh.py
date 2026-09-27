@@ -44,16 +44,19 @@ def can_enroll(student_id, course_code):
     if course is None:
         return False, "Hoc phan khong ton tai"
 
-    if course["enrolled"] >= course["capacity"]:
-        return False, "Lop da du so luong"
-
     duplicate = any(
         item["student_id"] == student_id and item["course_code"] == course_code
         for item in enrollments
     )
-
     if duplicate:
-        return False, "Sinh vien da dang ki hocj phan nay"
+            return False, "Sinh vien da dang ki hocj phan nay"
+    
+    if course["enrolled"] >= course["capacity"]:
+        return False, "Lop da du so luong"
+
+    
+
+    
 
     return True, "Co the dang ki hoc phan nay"
 
@@ -63,7 +66,7 @@ print(can_enroll("22000002", "INT2204"))
 
 try:
     limit = int(input("Nhap so luong hoc phan muon hien thi: "))
-    print(course[:limit])
+    print(courses[:limit])
 except ValueError:
     print("So luong phai la so nguyen")
 
@@ -83,3 +86,40 @@ def search_course(keyword: str):
     return results
 
 print(search_course("web"))
+
+
+# Bai tap tu luyen
+
+def enroll_student(student_id: str, course_code: str):
+    # kiem tra sinh vien ton tai
+    tontai_student = any(
+        student["id"] == student_id for student in students
+    )
+
+    if not tontai_student:
+        return "Khong ton tai sinh vien"
+
+
+    is_can_enroll, message = can_enroll(student_id=student_id, course_code=course_code)
+
+    if is_can_enroll:
+        # cap nhat enroll hoc phan
+        for course in courses:
+            if course["code"] == course_code:
+                course["enrolled"] += 1
+                break
+
+        # add sinh vien vao 
+        enrollments.append({"student_id": student_id, "course_code": course_code})
+
+    return message
+
+
+# taoj test
+
+print(enroll_student("22000002", "INT2204")) # thanh cong
+print(enroll_student("22000002", "INT2205")) # lop day
+print(enroll_student("22000002", "INT2222")) # ma hoc phan k ton tai
+print(enroll_student("22000003", "INT2204")) # khong ton taij sinh vien
+print(enroll_student("22000001", "INT2204")) # dang ki trung
+
