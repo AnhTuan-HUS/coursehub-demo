@@ -49,7 +49,7 @@ def can_enroll(student_id, course_code):
         for item in enrollments
     )
     if duplicate:
-            return False, "Sinh vien da dang ki hocj phan nay"
+            return False, "Sinh vien da dang ki hoc phan nay"
     
     if course["enrolled"] >= course["capacity"]:
         return False, "Lop da du so luong"
