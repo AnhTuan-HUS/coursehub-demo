@@ -2,6 +2,7 @@ from __future__ import annotations
 import logging
 
 from fastapi import FastAPI, HTTPException, Query, Response, status
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from .database import engine
@@ -13,6 +14,15 @@ app = FastAPI(
     title="CourseHub API",
     version="0.4.0",
     description="API thuc hanh Buoi 4 - transaction, locking va hieu nang",
+)
+
+# Buoi 5: chi cho phep frontend local goi API qua trinh duyet.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_credentials=False,
+    allow_methods=["GET", "POST", "DELETE", "PATCH"],
+    allow_headers=["Content-Type"],
 )
 
 
@@ -421,10 +431,10 @@ def update_section_capacity(
 # Bai 1
 @app.get("/enrollment-events")
 def list_enrollment_events(
-    student_id: str,
-    event_type: str,
-    skip: int = 0,
-    limit: int = 1,
+    student_id: str | None = Query(default=None),
+    event_type: str | None = Query(default=None),
+    skip: int = Query(default=0, ge=0),
+    limit: int = Query(default=20, ge=1, le=100),
 ) -> list[dict[str, object]]:
     sql = """
         SELECT id, student_id, class_section_id, event_type, source, dataset, occurred_at
